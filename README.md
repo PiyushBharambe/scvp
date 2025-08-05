@@ -64,7 +64,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/PiyushBharambe/supply_chain_visibility_platform.git
+   git clone https://github.com/PiyushBharambe/scvp.git
    cd scvp
    ```
 
