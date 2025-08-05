@@ -1,0 +1,58 @@
+/* Theme Variables */
+:root {
+  /* Light Theme */
+  --bg-primary-light: linear-gradient(to bottom right, #f0f9ff, #ffffff, #ecfeff);
+  --bg-secondary-light: rgba(255, 255, 255, 0.25);
+  --text-primary-light: #1f2937;
+  --text-secondary-light: #6b7280;
+  --border-light: rgba(255, 255, 255, 0.2);
+  
+  /* Dark Theme */
+  --bg-primary-dark: linear-gradient(to bottom right, #0f172a, #581c87, #0f172a);
+  --bg-secondary-dark: rgba(51, 65, 85, 0.3);
+  --text-primary-dark: #f1f5f9;
+  --text-secondary-dark: #cbd5e1;
+  --border-dark: rgba(51, 65, 85, 0.5);
+}
+
+/* Theme Classes */
+.theme-light {
+  background: var(--bg-primary-light);
+  color: var(--text-primary-light);
+}
+
+.theme-dark {
+  background: var(--bg-primary-dark);
+  color: var(--text-primary-dark);
+}
+
+/* Component Theme Styles */
+.glass-light {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(51, 65, 85, 0.3);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+.input-light {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #1f2937;
+}
+
+.input-light::placeholder {
+  color: #6b7280;
+}
+
+.input-dark {
+  background: rgba(51, 65, 85, 0.5);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+  color: #f1f5f9;
+}
+
+.input-dark::placeholder {
+  color: #cbd5e1;
+}

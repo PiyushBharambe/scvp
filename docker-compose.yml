@@ -1,0 +1,88 @@
+services:
+  # PostgreSQL Database Service (Managed by Docker Compose)
+  db:
+    image: postgres:14-alpine # Using a lightweight PostgreSQL image
+    container_name: scvp_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME} # Reads from .env
+      POSTGRES_USER: ${DB_USER} # Reads from .env
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # Reads from .env
+      POSTGRES_HOST_AUTH_METHOD: trust # For development simplicity
+    ports:
+      - "${DB_PORT}:${DB_PORT}" # Maps host port to container port, reads from .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persistent data volume for Dockerized DB
+    env_file: # <--- Docker Compose will read variables from this file
+      - ./.env # Points to the .env file in the project root
+
+  # Node.js Backend Service
+  backend:
+    build:
+      context: ./scvp_backend
+      dockerfile: Dockerfile
+    container_name: scvp_backend_app
+    restart: always
+    environment:
+      # DATABASE_URL now points to the Dockerized 'db' service, using variables from .env
+      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}/${DB_NAME}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${APP_JWT_SECRET} # Reads from .env
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db # Backend depends on the Dockerized database
+      - redis # Backend also depends on Redis
+    volumes:
+      - ./scvp_backend:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file: # <--- Backend service will also read from the root .env
+      - ./.env
+
+  # React Frontend Service
+  frontend:
+    build:
+      context: ./scvp_frontend
+      dockerfile: Dockerfile
+    container_name: scvp_frontend_app
+    restart: always
+    # Map port 3001 on the host to port 3000 in the container (React's default dev port)
+    ports:
+      - "3001:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./scvp_frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Helps with hot-reloading inside Docker
+    env_file: # <--- Frontend service will also read from the root .env
+      - ./.env
+
+  # Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: scvp_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # ML Service (Python FastAPI)
+  ml_service:
+    build:
+      context: ./ml_service
+      dockerfile: Dockerfile
+    container_name: scvp_ml_service
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ml_service:/app
+
+# Define named volumes for persistent data for the Dockerized DB
+volumes:
+  postgres_data:
+  redis_data:
